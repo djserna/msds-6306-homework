@@ -1,0 +1,80 @@
+---
+title: "DSerna_Livesession3assignment"
+author: "Daniel Serna"
+date: "June 4, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+### Question 1a
+```{r installPackage}
+#Install the fivethirtyeight package if it is not already installed.
+if(!require(fivethirtyeight)) install.packages("fivethirtyeight", repos = "https://cran.rstudio.com/bin/windows/contrib/3.5/fivethirtyeight_0.4.0.zip")
+```
+
+### Question 1b
+```{r assignDataSet}
+#retrieve the name of the 22nd dataset.
+datasetName <- data(package = "fivethirtyeight")$results[22,]['Item']
+#assign the 22nd dataset to an object.
+df <- get(datasetName)
+```
+
+### Question 1c
+```{r detailedList}
+#get a detailed list of data sets
+#vignette("fivethirtyeight", package = "fivethirtyeight")
+#the related news story url - http://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/
+```
+
+### Question 1d
+```{r dimensionsAndColumnNames}
+#dimensions
+dim(df)
+#column names
+colnames(df)
+```
+
+## Question 2
+
+### Question 2a
+```{r columnCount}
+#column names
+colnames(df)
+#number of columns
+ncol(df)
+```
+
+### Question 2b
+```{r countMajorCategory}
+#retrieve a table of unique counts for each major_category and assign to a data frame object.
+major_count <- as.data.frame(table(df$major_category))
+#rename columns.
+colnames(major_count) <- c("major_category", "frequency")
+major_count
+```
+
+### Question 2c
+```{r plotMajorCount}
+par(las=2)
+##adjust the left margin so majors can be displayed correctly.
+par(mar=c(5.1, 15, 4.1, 2.1))
+#note I am not adding a label for the y-axis since it will conflict with the bar labels.
+barplot(major_count$frequency, names.arg = major_count$major_category, horiz = TRUE, col = c("red", "white", "blue"), main = "Frequency of majors for recent college grads", xlab = "Frequency")
+```
+
+### Question 2d
+```{r writeDataToCSV}
+#Write the dataset to a .csv without row names
+write.csv(df, "college_recent_grads.csv", row.names = F)
+```
+
+## Question 3
+
+### Question 3d
+The location of my 6306 homework repository is https://github.com/djserna/msds-6306-homework
