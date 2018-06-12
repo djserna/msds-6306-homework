@@ -47,3 +47,11 @@ sortedFinal <- final[order(-final$Total),]
 ```
 sortedFinalGirls <- subset(sortedFinal, sortedFinal$Gender2016 == "F" & sortedFinal$Gender2015 == "F")
 ```
+
+## Output Files
+The output of our analysis is a csv file containing the top 10 most popular girl names. This is done with the following code:
+
+```
+write.csv(sortedFinalGirls[1:10,c("FirstName", "Total")], "popularGirlNames.csv", row.names = FALSE)
+```
+
