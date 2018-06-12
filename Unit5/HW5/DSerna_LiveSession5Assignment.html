@@ -224,6 +224,11 @@ sortedFinalGirls[1:10,&quot;FirstName&quot;]</code></pre>
 <pre><code>##  [1] &quot;Emma&quot;      &quot;Olivia&quot;    &quot;Sophia&quot;    &quot;Ava&quot;       &quot;Isabella&quot; 
 ##  [6] &quot;Mia&quot;       &quot;Charlotte&quot; &quot;Abigail&quot;   &quot;Emily&quot;     &quot;Harper&quot;</code></pre>
 </div>
+<div id="d-1" class="section level3">
+<h3>3d</h3>
+<pre class="r"><code>#Write out the FirstName and Total for the top 10 popular girl names to a csv file.
+write.csv(sortedFinalGirls[1:10,c(&quot;FirstName&quot;, &quot;Total&quot;)], &quot;popularGirlNames.csv&quot;, row.names = FALSE)</code></pre>
+</div>
 </div>
 
 

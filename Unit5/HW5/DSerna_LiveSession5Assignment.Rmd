@@ -88,3 +88,9 @@ sortedFinalGirls <- subset(sortedFinal, sortedFinal$Gender2016 == "F" & sortedFi
 #dislay the 10 ten most popular girl names.
 sortedFinalGirls[1:10,"FirstName"]
 ```
+
+### 3d
+```{r writeGirlNamesToFile}
+#Write out the FirstName and Total for the top 10 popular girl names to a csv file.
+write.csv(sortedFinalGirls[1:10,c("FirstName", "Total")], "popularGirlNames.csv", row.names = FALSE)
+```
