@@ -1,0 +1,90 @@
+---
+title: "DSerna_LiveSession5Assignment"
+author: "Daniel Serna"
+date: "June 11, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+### 1a
+
+```{r importYOB2016}
+#read in the text file, assign column names, column classes, and indicate separator character.
+df = read.table("yob2016.txt", header = FALSE, col.names = c("FirstName", "Gender", "Count"), sep = ";", colClasses = c("character", "character", "integer"))
+```
+
+### 1b
+```{r displayDataStructure}
+#display the summary of df
+summary(df)
+#display the structure of df
+str(df)
+```
+
+### 1c
+```{r findMisspelled}
+#find the row index with the misspelled name.
+misSpelledIndex <-grep("yyy$", df$FirstName)
+#retrieve the FirstName of the misspelled row.
+misSpelledName <- df[misSpelledIndex, "FirstName"]
+#display the misspelled name.
+misSpelledName
+```
+
+### 1d
+```{r removeMisspelled}
+#remove the row with the misspelled name and save into y2016 data frame.
+y2016 <- df[-misSpelledIndex,]
+```
+
+## Question 2
+
+### 2a
+```{r importYOB2015}
+#read in the text file, assign column names, column classes, and indicate separator character.
+y2015 = read.table("yob2015.txt", header = FALSE, col.names = c("FirstName", "Gender", "Count"), sep = ",", colClasses = c("character", "character", "integer"))
+```
+
+### 2b
+```{r displayTail}
+#display the last 10 rows of y2015 data frame.
+tail(y2015, 10)
+```
+In the last 10 rows of data from the y2015 data frame, we notice they all have a count of 5 which is interesting.
+
+### 2c
+```{r mergeDataFrames}
+#merge the 2 data frames by FirstName and remove names that don't have data for both years.
+final <- merge(y2016, y2015, by = "FirstName", all = FALSE)
+#rename columns of final for readability.
+colnames(final) <- c("FirstName", "Gender2016", "Count2016", "Gender2015", "Count2015")
+```
+
+## Question 3
+
+### 3a
+```{r addTotalColumn}
+#add a total column that combines the 2016 and 2015 count.
+final$Total <- with(final, Count2016 + Count2015)
+```
+
+### 3b
+```{r sortByTotal}
+#create a sorted data frame ordered by total descending.
+sortedFinal <- final[order(-final$Total),]
+#display the top 10 most popular names.
+sortedFinal[1:10,"FirstName"]
+```
+
+### 3c
+```{r omitBoys}
+#get a subset dataframe only for rows with gender equal to F.
+sortedFinalGirls <- subset(sortedFinal, sortedFinal$Gender2016 == "F" & sortedFinal$Gender2015 == "F")
+#dislay the 10 ten most popular girl names.
+sortedFinalGirls[1:10,"FirstName"]
+```
