@@ -94,3 +94,8 @@ sortedFinalGirls[1:10,"FirstName"]
 #Write out the FirstName and Total for the top 10 popular girl names to a csv file.
 write.csv(sortedFinalGirls[1:10,c("FirstName", "Total")], "popularGirlNames.csv", row.names = FALSE)
 ```
+
+## Question 4
+The location of my github repo/folder for this homework assignment is: https://github.com/djserna/msds-6306-homework/tree/master/Unit5/HW5
+
+The location of my codebook for this assignment is: https://github.com/djserna/msds-6306-homework/blob/master/Unit5/HW5/codebook.md
