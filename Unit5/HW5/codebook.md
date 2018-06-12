@@ -32,6 +32,7 @@ y2015 = read.table("yob2015.txt", header = FALSE, col.names = c("FirstName", "Ge
 
 ```
 final <- merge(y2016, y2015, by = "FirstName", all = FALSE)
+colnames(final) <- c("FirstName", "Gender2016", "Count2016", "Gender2015", "Count2015")
 final$Total <- with(final, Count2016 + Count2015)
 ```
 
