@@ -1,7 +1,7 @@
 ---
 title: "DSerna_LiveSession9Assignment"
 author: "Daniel Serna"
-date: "July 9, 2018"
+date: "July 10, 2018"
 output: html_document
 ---
 
@@ -14,8 +14,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Question 1b
 
 ```{r scrapeCast}
+#load rvest library
 if(!require(rvest)) install.packages("rvest")
 library(rvest)
+
 url <- 'http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1'
 #read the page into a variable.
 harryPotterPage <- read_html(url)
@@ -158,6 +160,7 @@ sapply(shootingDF, class)
 
 ### Question 2d
 ```{r barChart}
+#create bar plot with flipped orientation, axis labels, centered title, and colored categories
 library(ggplot2)
 plot <- ggplot(data = shootingDF, aes(x = shootingDF$Name, y = shootingDF$`FG%`, fill = shootingDF$Position)) + geom_bar(stat="identity") + ggtitle("Field goals percentage per game by player") +
   theme(plot.title = element_text(hjust = 0.5)) + 
@@ -165,3 +168,6 @@ plot <- ggplot(data = shootingDF, aes(x = shootingDF$Name, y = shootingDF$`FG%`,
   xlab("Player name") + labs(fill = "Position")
 plot + coord_flip()
 ```
+
+## Github location
+https://github.com/djserna/msds-6306-homework/tree/master/Unit9
