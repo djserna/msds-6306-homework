@@ -1,0 +1,87 @@
+---
+title: "DSerna_LiveSession9Assignment"
+author: "Daniel Serna"
+date: "July 9, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+### Question 1b
+
+```{r scrapeCast}
+if(!require(rvest)) install.packages("rvest")
+library(rvest)
+url <- 'http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1'
+#read the page into a variable.
+harryPotterPage <- read_html(url)
+
+#XPath derived from browser tools.
+castTableXPath <- '//*[@id="fullcredits_content"]/table[3]'
+
+#read cast table into a variable
+castTable <- html_nodes(harryPotterPage, xpath = castTableXPath)
+
+#convert cast table into a dataframe
+castDF <- as.data.frame(html_table(castTable))
+```
+
+### Question 1c
+```{r cleanCastDF}
+#remove unnecessary columns and blank first row
+castDF <- castDF[-c(1),-c(1,3)]
+
+#rename columns
+colnames(castDF) <- c("Actor", "Character")
+
+#rectify Warwick Davis character name
+castDF[castDF$Actor == "Warwick Davis",]$Character = "Griphook / Professor Filius Flitwick"
+
+#remove "Rest of cast listed alphabetically:" row
+castDF <- castDF[!(castDF$Actor=="Rest of cast listed alphabetically:"),]
+```
+
+### Question 1d
+```{r splitActorName}
+#load stringi library
+library(stringi)
+
+#create formula to splice off first name (and middle if applicable)
+firstName <- function(nameVector){
+  returnVector <- c()
+  for (i in 1:length(nameVector)){
+    names <- stri_extract_all_words(nameVector[i], simplify=TRUE)
+    returnValue <- paste(names[1,1:length(names)-1], sep = " ")
+    returnValue <- paste(returnValue, collapse=" ")
+    returnVector[i] <- returnValue
+  }
+  returnVector
+}
+
+#create formula to splice off surname
+surname <- function(nameVector){
+  returnVector <- c()
+  for (i in 1:length(nameVector)){
+    names <- stri_extract_all_words(nameVector[i], simplify=TRUE)
+    returnValue <- names[length(names)]
+    returnVector[i] <- returnValue
+  }
+  returnVector
+}
+
+#run firstName and surname formulas on castDF to split actor name data
+castDF$FirstName <- firstName(castDF$Actor)
+castDF$Surname <- surname(castDF$Actor)
+
+#remove actor column
+castDF <- castDF[, -c(1)]
+```
+
+### Question 1e
+```{r headCastDF}
+head(castDF, 10)
+```
