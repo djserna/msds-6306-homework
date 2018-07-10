@@ -85,3 +85,83 @@ castDF <- castDF[, -c(1)]
 ```{r headCastDF}
 head(castDF, 10)
 ```
+
+## Question 2
+
+### Question 2b
+
+```{r scrapeShootingStats}
+url <- 'http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs'
+#read the page into a variable.
+espnPage <- read_html(url)
+
+#XPath derived from browser tools.
+shootingTableXPath <- '//*[@id="my-players-table"]/div[4]/div[3]/table'
+
+#read shooting table into a variable
+shootingTable <- html_nodes(espnPage, xpath = shootingTableXPath)
+
+#convert shooting table into a dataframe
+shootingDF <- as.data.frame(html_table(shootingTable))
+```
+
+### Question 2c
+```{r cleanShootingDF}
+#assign column names from existing row
+colnames(shootingDF) <- shootingDF[2,]
+
+#remove first 2 unnecessary rows
+shootingDF <- shootingDF[-c(1:2),]
+
+#remove totals row
+shootingDF <- shootingDF[-c(nrow(shootingDF)),]
+
+#create formula to splice off player name
+playerName <- function(nameVector){
+  returnVector <- c()
+  for (i in 1:length(nameVector)){
+    names <- stri_extract_all_words(nameVector[i], simplify=TRUE)
+    returnValue <- paste(names[1,1:length(names)-1], sep = " ")
+    returnValue <- paste(returnValue, collapse=" ")
+    returnVector[i] <- returnValue
+  }
+  returnVector
+}
+
+#create formula to splice off position
+position <- function(nameVector){
+  returnVector <- c()
+  for (i in 1:length(nameVector)){
+    names <- stri_extract_all_words(nameVector[i], simplify=TRUE)
+    returnValue <- names[length(names)]
+    returnVector[i] <- returnValue
+  }
+  returnVector
+}
+
+#run playerName and position formulas on shootingDF to split player data
+shootingDF$Name <- playerName(shootingDF$PLAYER)
+shootingDF$Position <- position(shootingDF$PLAYER)
+
+#remove player column
+shootingDF <- shootingDF[, -c(1)]
+
+#check data types of all columns
+sapply(shootingDF, class)
+
+#convert relevant columns to numeric
+shootingDF[,1:14] <- sapply(shootingDF[,1:14], as.numeric)
+
+#check data types of all columns
+sapply(shootingDF, class)
+```
+
+### Question 2d
+```{r barChart}
+library(ggplot2)
+plot <- ggplot(data = shootingDF, aes(x = shootingDF$Name, y = shootingDF$`FG%`, fill = shootingDF$Position)) + geom_bar(stat="identity") + ggtitle("Field goals percentage per game by player") +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  ylab("Field goal percentage") + 
+  xlab("Player name") + labs(fill = "Position")
+plot + coord_flip()
+```
