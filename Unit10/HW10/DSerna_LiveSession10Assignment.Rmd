@@ -1,0 +1,60 @@
+---
+title: "DSerna_LiveSession10Assignment"
+author: "Daniel Serna"
+date: "July 22, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r loadDataFrame}
+load("N-MHSS-2015-DS0001-data-r.rda")
+if(!require(sqldf)) install.packages("sqldf")
+```
+
+### Question 1b
+```{r stateAbbreviations}
+#create a vector of state abbreviations with whitespace trimmed..
+stateAbbreviations <-trimws(as.vector(unique(mh2015_puf$LST)), which = c("both"))
+
+#sort vector alphabetically.
+stateAbbreviations <- sort(stateAbbreviations)
+
+#display state abbreviations.
+stateAbbreviations
+```
+
+### Question 1c
+```{r hospitalCount}
+#create a vector for states to exclude
+statesToExclude <- c("AK", "AS", "GU", "HI", "PR", "VI")
+
+#exclude everything but mainland states
+statesFiltered <- setdiff(stateAbbreviations, statesToExclude)
+
+#filter dataframe for only mainlaind states
+mhdfFiltered <- mh2015_puf[trimws(mh2015_puf$LST, which = c("both")) %in% statesFiltered & mh2015_puf$FACILITYTYPE =="Veterans Administration medical center (VAMC) or other VA health care facility",]
+
+#load sqldf library to handle data queries
+library(sqldf)
+
+#create a dataframe that lists the VA hospital count by state
+vaCount<- sqldf("select LST as State, Count(*) as VACount from mhdfFiltered group by LST")
+vaCount
+```
+### Question 1d
+```{r plotHospitalCount}
+#load ggplot2 library
+library(ggplot2)
+
+#plot count by state, remove legend, and flip orientation of x-axis.
+plot <- ggplot(data = vaCount, aes(x = vaCount$State, y = vaCount$VACount, fill = vaCount$State)) + geom_bar(stat="identity") + ggtitle("VA Hospital count by State") +
+  theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle=90)) + 
+  ylab("Hospital Count") + 
+  xlab("State Abbreviation") + labs(fill = "State") + guides(fill=FALSE)
+plot
+
+```
