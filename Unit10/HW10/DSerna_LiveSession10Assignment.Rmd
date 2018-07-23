@@ -51,10 +51,60 @@ vaCount
 library(ggplot2)
 
 #plot count by state, remove legend, and flip orientation of x-axis.
-plot <- ggplot(data = vaCount, aes(x = vaCount$State, y = vaCount$VACount, fill = vaCount$State)) + geom_bar(stat="identity") + ggtitle("VA Hospital count by State") +
+vaCountPlot <- ggplot(data = vaCount, aes(x = vaCount$State, y = vaCount$VACount, fill = vaCount$State)) + geom_bar(stat="identity") + ggtitle("VA Hospital count by State") +
   theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle=90)) + 
   ylab("Hospital Count") + 
   xlab("State Abbreviation") + labs(fill = "State") + guides(fill=FALSE)
-plot
-
+vaCountPlot
 ```
+
+## Question 2
+
+### Question 2a
+```{r importStateSize}
+stateSize <- read.csv("statesize.csv")
+paste(vaCount$State)
+#The issue is there is whitespace in the state abbreviation field.
+```
+
+### Question 2b
+```{r rectifyWhiteSpaceAndMerge}
+#trim off the white space
+vaCount$State <- trimws(vaCount$State, which = c("both"))
+
+#display rectified state abbreviation.
+vaCount$State
+
+#rename column in preparation for merge
+colnames(vaCount) <- c("Abbrev", "VACount")
+
+#merge data frames
+mergedDF <- merge(vaCount, stateSize, by="Abbrev")
+#display head of merged data frame
+head(mergedDF)
+```
+
+### Question 2c
+```{r countHospitalsPer1000SQMiles}
+#calculate the count of hospitals per 1k square miles
+mergedDF$HospitalsPer1kSQMiles <- (mergedDF$VACount / (mergedDF$SqMiles / 1000))
+
+#display head of data frame with new column
+head(mergedDF)
+```
+
+### Question 2d
+```{r plotHospitalsPer1kSQMiles}
+#plot count by 1k square miles, order bars in decreasing order, change default fill color, and flip orientation of x-axis.
+va1kCountPlot <- ggplot(data = mergedDF, aes(x = reorder(mergedDF$Abbrev, -mergedDF$HospitalsPer1kSQMiles), y = mergedDF$HospitalsPer1kSQMiles, fill = mergedDF$Region)) + geom_bar(stat="identity") + scale_fill_manual("legend", values = c("Midwest" = "purple", "Northeast" = "orange", "South" = "red", "West" = "black")) + ggtitle("VA Hospital count per 1k square miles by state") +
+  theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle=90)) + 
+  ylab("VA hospital count per 1k square miles") + 
+  xlab("State Abbreviation") + labs(fill = "Region")
+va1kCountPlot
+```
+
+### Question 2e
+It appears the Northeast has a disproportionately higher amount of VA hospitals per 1000 square miles when compared to the other regions. The West appears to have a disproportionately lower amount of VA hospitals per 1000 square miles when compared to the other regions. I would recommend we try to rectify the low number of VA hospitals in the West region. Perhaps we could funnel some funding from the Northeast region into the West to rectify the situation. I would also recommend we ensure we have accurate data before making budget priority changes.
+
+## Github repo location
+https://github.com/djserna/msds-6306-homework/tree/master/Unit10
