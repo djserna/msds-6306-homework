@@ -1,0 +1,47 @@
+---
+title: "DSerna_LiveSession11Assignment"
+author: "Daniel Serna"
+date: "July 25, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+### Question 1a
+
+```{r euStockMarkets}
+#display help file for EuStockMarkets data set.
+#help("EuStockMarkets") commenting this out as we don't want to run this when knitting.
+
+#pull the DAX index into a variable.
+dax <- EuStockMarkets[,"DAX"]
+```
+
+### Question 1b
+```{r plotDAX}
+#create a plot with blue line and red indicator divding pre and post 1997 data.
+plot(dax, xlab="Year", ylab="DAX Index", main="DAX index over time from 1991 to 1999", col="blue")
+abline(v=1997, col="red")
+```
+
+### Question 1c
+```{r decomposeTimeSeries}
+#get a decompose variable for dax index.
+decompose_dax <- decompose(dax, "multiplicative")
+
+#plot the seasonal component.
+plot(decompose_dax$seasonal, xlab="Year", ylab="DAX index seasonal component", main="DAX index seasonal component from 1991 to 1999", col="blue")
+abline(v=1997, col="red")
+
+#plot the trend componenet
+plot(decompose_dax$trend, xlab="Year", ylab="DAX index trend component", main="DAX index trend component from 1991 to 1999", col="blue")
+abline(v=1997, col="red")
+
+#plot the random componenet
+plot(decompose_dax$random, xlab="Year", ylab="DAX index random component", main="DAX index random component from 1991 to 1999", col="blue")
+abline(v=1997, col="red")
+```
