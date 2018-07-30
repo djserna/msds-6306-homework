@@ -124,3 +124,6 @@ merged <- merge(olliXTS, gregXTS)
 dygraph(merged, xlab = "Date", ylab = "Wands Sold", main = "Number of wands sold by year") %>% dySeries("OlliWandsSold", color = "red") %>% dySeries("GregWandsSold", color = "green") %>% dyShading(from = "1995-1-1", to = "1999-1-1") %>% dyHighlight(highlightSeriesOpts = list(strokeWidth = 3)) %>% 
   dyRangeSelector(height = 100, dateWindow = c("1970-1-1","2017-1-1")) 
 ```
+
+## GitHub repo
+https://github.com/djserna/msds-6306-homework/tree/master/Unit11
