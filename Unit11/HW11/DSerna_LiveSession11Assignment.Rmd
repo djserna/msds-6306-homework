@@ -45,3 +45,82 @@ abline(v=1997, col="red")
 plot(decompose_dax$random, xlab="Year", ylab="DAX index random component", main="DAX index random component from 1991 to 1999", col="blue")
 abline(v=1997, col="red")
 ```
+
+## Question 2
+
+### Question 2a
+```{r maxTemp}
+if (!require(fpp2)) install.packages("fpp2")
+library(fpp2)
+#help(maxtemp) commenting this out as we don't want to run this when knitting.
+autoplot(maxtemp)
+```
+
+### Question 2b
+```{r subsetMaxtemp}
+#create variable to hold data from 1990 onward.
+maxtempSubset <- window(maxtemp, start=1990)
+```
+
+### Question 2c
+```{r sesPredict}
+fitSES1 <- ses(maxtempSubset, h=5)
+plot(maxtempSubset, xlab="Year", ylab="Max temperature", main="Max temperatures from 1990-2021", xlim=c(1990,2021))
+lines(fitted(fitSES1), col="blue")
+lines(fitSES1$mean, col="blue", type="o")
+fitSES1$model$aicc
+```
+AICc of the SES fitted model is 141.5302
+
+### Question 2d
+```{r holtPredit}
+fitHolt1 <- holt(maxtempSubset, initial="optimal", damped = TRUE, h=5)
+plot(maxtempSubset, xlab="Year", ylab="Max temperature", main="Max temperatures from 1990-2021", xlim=c(1990,2021))
+lines(fitted(fitHolt1), col="blue")
+lines(fitHolt1$mean, col="blue", type="o")
+fitHolt2 <- holt(maxtempSubset)
+fitHolt1$model$aicc
+```
+AICc of the Holt fitted model is 142.2355
+
+### Question 2e
+The AICc for the SES fitted model is 141.5302 which is less than the AICc of the damped Holt fitted model of 142.2355. Lower AICc is better so the SES fitted model is better in this example.
+
+## Question 3
+
+### Question 3a
+```{r readDataFrames}
+if (!require(dygraphs)) install.packages("dygraphs")
+library(dygraphs)
+olli <- read.csv("Unit11TimeSeries_Ollivander.csv", header = FALSE)
+colnames(olli) <- c("Date", "OlliWandsSold")
+greg <- read.csv("Unit11TimeSeries_Gregorovitch.csv", header = FALSE)
+colnames(greg) <- c("Date", "GregWandsSold")
+```
+### Question 3b
+```{r convertDate}
+#convert date columns into date class
+olli$Date <- as.Date(olli$Date, format = "%m/%d/%Y")
+greg$Date <- as.Date(greg$Date, format = "%m/%d/%Y")
+```
+
+### Question 3c
+```{r convertXTS}
+#load xts library
+library(xts)
+#convert olli data frame to XTS object
+olliXTS <- xts(olli, order.by = olli$Date)
+
+#convert greg data frame to XTS object
+gregXTS <- xts(greg, order.by = greg$Date)
+```
+
+### Question 3d
+```{r dygraph}
+#merge the two xts objects
+merged <- merge(olliXTS, gregXTS)
+
+#create a dygraph with shading, range selector, and highlighting.
+dygraph(merged, xlab = "Date", ylab = "Wands Sold", main = "Number of wands sold by year") %>% dySeries("OlliWandsSold", color = "red") %>% dySeries("GregWandsSold", color = "green") %>% dyShading(from = "1995-1-1", to = "1999-1-1") %>% dyHighlight(highlightSeriesOpts = list(strokeWidth = 3)) %>% 
+  dyRangeSelector(height = 100, dateWindow = c("1970-1-1","2017-1-1")) 
+```
